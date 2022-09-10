@@ -13,7 +13,7 @@
   ],
   "url": "https://github.com/Drental/fvtt-tokenactionhud",
   "flags": {},
-  "version": "2.3.0",
+  "version": "2.4.0",
   "minimumCoreVersion": "9.236",
   "compatibleCoreVersion": "9",
   "scripts": ["./lib/tagify/tagify.min.js", "./scripts/bundle.min.js"],

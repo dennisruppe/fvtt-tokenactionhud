@@ -26,6 +26,8 @@ export class RollHandlerBaseStarWarsFFG extends RollHandler {
         }
       case "weapon":
         return game.ffg.DiceHelpers.rollItem(actionId, actor.id);
+      case "shipweapon":
+        return this._rollShipWeapon(actor, actionId);
       case "skill":
         return this._rollSkill(actor, actionId, event);
       case "forcepower":
@@ -99,5 +101,61 @@ export class RollHandlerBaseStarWarsFFG extends RollHandler {
       difficulty,
       actorSheet
     );
+  }
+
+  async _rollShipWeapon(actor, itemId) {
+    const item = actor.items.get(itemId);
+    const actorSheet = actor.sheet.getData();
+    const skillName = item.data.data.skill.value;
+    
+    let skills;
+    const theme = await game.settings.get("starwarsffg", "skilltheme");
+    try {
+      skills = JSON.parse(JSON.stringify(CONFIG.FFG.alternateskilllists.find((list) => list.id === theme).skills));
+    } catch (err) {
+      // if we run into an error use the default starwars skill set
+      skills = JSON.parse(JSON.stringify(CONFIG.FFG.alternateskilllists.find((list) => list.id === "starwars").skills));
+      CONFIG.logger.warn(`Unable to load skill theme ${theme}, defaulting to starwars skill theme`, err);
+    }
+
+    let skillData = skills?.[skillName];
+
+    if (!skillData) {
+      skillData = data.data[skillName];
+    }
+
+    let skill = {
+      rank: 0,
+      characteristic: "",
+      boost: 0,
+      setback: 0,
+      force: 0,
+      advantage: 0,
+      dark: 0,
+      light: 0,
+      failure: 0,
+      threat: 0,
+      success: 0,
+      triumph: 0,
+      despair: 0,
+      label: skillData?.label ? game.i18n.localize(skillData.label) : game.i18n.localize(skillName),
+    };
+    let characteristic = {
+      value: 0,
+    };
+
+    if (actorSheet?.data?.skills?.[skillName]) {
+      skill = actorSheet.data.skills[skillName];
+    }
+    if (actorSheet?.data?.characteristics?.[skill?.characteristic]) {
+      characteristic = actorSheet.data.characteristics[skill.characteristic];
+    }
+
+    game.ffg.DiceHelpers.rollSkillDirect(
+      skill,
+      characteristic,
+      2,
+      actorSheet
+    )
   }
 }

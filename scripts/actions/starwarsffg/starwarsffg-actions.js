@@ -29,6 +29,13 @@ export class ActionHandlerStarWarsFFG extends ActionHandler {
       weapons
     );
 
+    let shipweapons = this._getItemsList(actor, tokenId, "shipweapon");
+    this._combineCategoryWithList(
+      result,
+      this.i18n("tokenactionhud.weapons"),
+      shipweapons
+    );
+
     let forcePowers = this._getItemsList(actor, tokenId, "forcepower");
     this._combineCategoryWithList(
       result,
@@ -38,10 +45,12 @@ export class ActionHandlerStarWarsFFG extends ActionHandler {
 
     const data = actor.data.data;
 
-    data.skilltypes.forEach((type) => {
-      let skills = this._getSkills(type, data, tokenId);
-      this._combineCategoryWithList(result, type.label, skills);
-    });
+    if (actor.type === "character" || actor.type === "minion") {
+      data.skilltypes.forEach((type) => {
+        let skills = this._getSkills(type, data, tokenId);
+        this._combineCategoryWithList(result, type.label, skills);
+      });
+    }
 
     if (game.user.isGM) {
       this._combineCategoryWithList(
