@@ -151,11 +151,26 @@ export class RollHandlerBaseStarWarsFFG extends RollHandler {
       characteristic = actorSheet.data.characteristics[skill.characteristic];
     }
 
-    game.ffg.DiceHelpers.rollSkillDirect(
-      skill,
-      characteristic,
-      2,
-      actorSheet
-    )
+    let dicePool = new DicePoolFFG({
+      ability: Math.max(characteristic.value, skill.rank),
+      boost: skill.boost,
+      setback: skill.setback,
+      force: skill.force,
+      advantage: skill.advantage,
+      dark: skill.dark,
+      light: skill.light,
+      failure: skill.failure,
+      threat: skill.threat,
+      success: skill.success,
+      triumph: skill?.triumph ? skill.triumph : 0,
+      despair: skill?.despair ? skill.despair : 0,
+      difficulty: 2, // default to average difficulty
+    });
+
+    dicePool.upgrade(Math.min(characteristic.value, skill.rank));
+
+    dicePool = new DicePoolFFG(await game.ffg.DiceHelpers.getModifiers(dicePool, item.data));
+
+    game.ffg.DiceHelpers.displayRollDialog(actorSheet, dicePool, `${game.i18n.localize("SWFFG.Rolling")} ${skill.label}`, skill.label, item.data, null, null);
   }
 }
