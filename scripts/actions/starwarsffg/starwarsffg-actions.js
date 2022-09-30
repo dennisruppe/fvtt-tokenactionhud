@@ -128,7 +128,7 @@ export class ActionHandlerStarWarsFFG extends ActionHandler {
   _produceItemMap(tokenId, itemSet, type) {
     return itemSet.map((i) => {
       let encodedValue = [type, tokenId, i.id].join(this.delimiter);
-      return { name: i.name, encodedValue: encodedValue, id: i.id };
+      return { name: i.name, encodedValue: encodedValue, id: i.id, img: i.img };
     });
   }
 
